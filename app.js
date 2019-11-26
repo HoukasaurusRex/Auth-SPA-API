@@ -1,3 +1,4 @@
+require('dotenv-defaults')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
@@ -18,7 +19,7 @@ app.use(cookieParser())
 app.use(
   cors({
     // origin must not be a wildcard to receive cross domain cookies
-    origin: 'http://localhost:8080',
+    origin: process.env.CLIENT_ORIGIN,
     credentials: true
   })
 )
@@ -34,7 +35,7 @@ mongoose.connect(
 
 app.use('/auth', authRouter)
 app.get('/', (req, res) => {
-  res.redirect('http://localhost:8080')
+  res.redirect(process.env.CLIENT_ORIGIN)
 })
 
 module.exports = app
