@@ -54,7 +54,7 @@ router.post('/email', async (req, res) => {
     res.status(400).send({ error: 'Incorrect email or password' })
     return
   }
-  const token = setAuthCookies(user, res)
+  const token = setAuthCookies(req, res)
   res.send({ user, token })
 })
 
