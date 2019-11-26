@@ -21,7 +21,7 @@ app.use(
     // origin must not be a wildcard to receive cross domain cookies
     origin: [
       process.env.CLIENT_ORIGIN,
-      'https://oauth-examples-client.terminallychill.now.sh/',
+      'https://oauth-examples-client.terminallychill.now.sh',
       'http://localhost:8080'
     ],
     // TODO: function to validate origin

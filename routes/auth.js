@@ -60,7 +60,7 @@ const googleOptions = { scope: ['profile', 'email', 'openid'] }
 router.get('/google', passport.authenticate('google', googleOptions))
 router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
   const token = setAuthCookies(req.user, res)
-  res.redirect('http://localhost:8080/')
+  res.redirect(process.env.CLIENT_ORIGIN)
 })
 
 const linkedinOptions = {
@@ -72,7 +72,7 @@ router.get(
   passport.authenticate('linkedin'),
   (req, res) => {
     const token = setAuthCookies(req.user, res)
-    res.redirect('http://localhost:8080/')
+    res.redirect(process.env.CLIENT_ORIGIN)
   }
 )
 
