@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon ./bin/www",
     "test": "echo 'no test specified'",
-    "deploy": "heroku deploy"
+    "deploy": "git push heroku master"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
