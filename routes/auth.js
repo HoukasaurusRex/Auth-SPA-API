@@ -6,23 +6,21 @@ const Users = require('../models/Users')
 const { generateUserPayload } = require('../utils/jwt')
 const router = express.Router()
 
-const setAuthCookies = (user, res) => {
-  const payload = generateUserPayload(user)
+const setAuthCookies = (req, res) => {
+  const payload = generateUserPayload(req.user)
   const token = jwt.sign(payload, process.env.TOKEN_SECRET)
   const jwtComposition = token.split('.')
   const jwtPayload = jwtComposition.slice(1).join('.')
   const jwtSignature = jwtComposition[0]
   // permanent
   res.cookie('Auth-Payload', jwtPayload, {
-    // secure: process.env.NODE_ENV !== 'development',
-    secure: false,
+    secure: req.secure,
     maxAge: 1000 * 60 * 30, // 1 hour
     httpOnly: false
   })
   // session
   res.cookie('Auth-Signature', jwtSignature, {
-    // secure: process.env.NODE_ENV !== 'development',
-    secure: false,
+    secure: req.secure,
     httpOnly: true
   })
   return token
@@ -59,7 +57,7 @@ router.post('/email', async (req, res) => {
 const googleOptions = { scope: ['profile', 'email', 'openid'] }
 router.get('/google', passport.authenticate('google', googleOptions))
 router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-  const token = setAuthCookies(req.user, res)
+  const token = setAuthCookies(req, res)
   res.redirect(process.env.CLIENT_ORIGIN)
 })
 
@@ -71,7 +69,7 @@ router.get(
   '/linkedin/redirect',
   passport.authenticate('linkedin'),
   (req, res) => {
-    const token = setAuthCookies(req.user, res)
+    const token = setAuthCookies(req, res)
     res.redirect(process.env.CLIENT_ORIGIN)
   }
 )
