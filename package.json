@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "test": "echo 'no test specified'"
+    "test": "echo 'no test specified'",
+    "deploy": "heroku deploy"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -15,6 +16,7 @@
     "express": "~4.16.1",
     "express-jwt": "^5.3.1",
     "helmet": "^3.21.2",
+    "heroku": "^7.35.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.7",
     "morgan": "~1.9.1",
