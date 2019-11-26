@@ -16,12 +16,16 @@ const setAuthCookies = (req, res) => {
   res.cookie('Auth-Payload', jwtPayload, {
     secure: req.secure,
     maxAge: 1000 * 60 * 30, // 1 hour
-    httpOnly: false
+    httpOnly: false,
+    domain: req.hostname,
+    sameSite: false
   })
   // session
   res.cookie('Auth-Signature', jwtSignature, {
     secure: req.secure,
-    httpOnly: true
+    httpOnly: true,
+    domain: req.hostname,
+    sameSite: false
   })
   return token
 }
