@@ -1,4 +1,4 @@
-require('dotenv-defaults')
+require('dotenv-defaults').config()
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
