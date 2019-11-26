@@ -6,8 +6,8 @@ const Users = require('../models/Users')
 const { generateUserPayload } = require('../utils/jwt')
 const router = express.Router()
 
-const setAuthCookies = (req, res) => {
-  const payload = generateUserPayload(req.user)
+const setAuthCookies = (req, res, user) => {
+  const payload = generateUserPayload(user)
   const token = jwt.sign(payload, process.env.TOKEN_SECRET)
   const jwtComposition = token.split('.')
   const jwtPayload = jwtComposition.slice(1).join('.')
@@ -54,14 +54,14 @@ router.post('/email', async (req, res) => {
     res.status(400).send({ error: 'Incorrect email or password' })
     return
   }
-  const token = setAuthCookies(req, res)
+  const token = setAuthCookies(req, res, user)
   res.send({ user, token })
 })
 
 const googleOptions = { scope: ['profile', 'email', 'openid'] }
 router.get('/google', passport.authenticate('google', googleOptions))
 router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-  const token = setAuthCookies(req, res)
+  const token = setAuthCookies(req, res, req.user)
   res.redirect(process.env.CLIENT_ORIGIN)
 })
 
@@ -73,7 +73,7 @@ router.get(
   '/linkedin/redirect',
   passport.authenticate('linkedin'),
   (req, res) => {
-    const token = setAuthCookies(req, res)
+    const token = setAuthCookies(req, res, req.user)
     res.redirect(process.env.CLIENT_ORIGIN)
   }
 )
