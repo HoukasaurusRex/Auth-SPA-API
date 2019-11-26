@@ -14,13 +14,15 @@ const setAuthCookies = (user, res) => {
   const jwtSignature = jwtComposition[0]
   // permanent
   res.cookie('Auth-Payload', jwtPayload, {
-    secure: process.env.NODE_ENV !== 'development',
+    // secure: process.env.NODE_ENV !== 'development',
+    secure: false,
     maxAge: 1000 * 60 * 30, // 1 hour
     httpOnly: false
   })
   // session
   res.cookie('Auth-Signature', jwtSignature, {
-    secure: process.env.NODE_ENV !== 'development',
+    // secure: process.env.NODE_ENV !== 'development',
+    secure: false,
     httpOnly: true
   })
   return token
