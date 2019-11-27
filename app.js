@@ -22,7 +22,8 @@ app.use(
     origin: [
       process.env.CLIENT_ORIGIN,
       'https://oauth-examples-client.terminallychill.now.sh',
-      'http://localhost:8080'
+      'http://localhost:8080',
+      'https://auth-client.houk.space'
     ],
     // TODO: function to validate origin
     credentials: true
