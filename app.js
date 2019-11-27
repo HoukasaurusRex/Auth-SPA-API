@@ -44,6 +44,7 @@ app.get('/', (req, res) => {
 })
 
 app.use((err, req, res) => {
+  console.log('=========================')
   console.error(err)
   if (!res.headersSent) {
     res.status(400).send({ error: err.message })

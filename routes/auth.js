@@ -31,25 +31,29 @@ const setAuthCookies = (req, res, user) => {
   return token
 }
 
-router.post('/test/cookies', (req, res) => {
-  const user = req.body || {
-    id: 'test',
-    email: 'test@example.com'
+router.post('/test/cookies', (req, res, next) => {
+  try {
+    const user = req.body || {
+      id: 'test',
+      email: 'test@example.com'
+    }
+    const token = jwt.sign(user, process.env.TOKEN_SECRET)
+    const { httpOnly, sameSite, domain, secure, maxAge } = req.query
+    const maxAgeNum = parseInt(maxAge, 10)
+    const options = {
+      secure: secure === 'true',
+      httpOnly: httpOnly === 'true',
+      domain,
+      sameSite
+    }
+    if (!isNaN(maxAgeNum)) {
+      options.maxAge = maxAgeNum
+    }
+    res.cookie('test.cookie', token, options)
+    res.send({ token, cookie: res.get('Set-Cookie') })
+  } catch (error) {
+    next(error)
   }
-  const token = jwt.sign(user, process.env.TOKEN_SECRET)
-  const { httpOnly, sameSite, domain, secure, maxAge } = req.query
-  const maxAgeNum = parseInt(maxAge, 10)
-  const options = {
-    secure: secure === 'true',
-    httpOnly: httpOnly === 'true',
-    domain,
-    sameSite: sameSite === 'true'
-  }
-  if (!isNaN(maxAgeNum)) {
-    options.maxAge = maxAgeNum
-  }
-  res.cookie('test.cookie', token, options)
-  res.send({ token, cookie: res.get('Set-Cookie') })
 })
 
 router.get('/verify', passport.isAuthenticated, (req, res) => {
@@ -60,24 +64,28 @@ router.post('/logout', (req, res) => {
   res.send('logging out')
 })
 
-router.post('/email', async (req, res) => {
-  if (!req.body.email || !req.body.password) {
-    return res.status(400).send({ error: 'Email or password missing' })
-  }
-  const user =
-    (await Users.findOne({ email: req.body.email })) ||
-    (await Users.create({
-      email: req.body.email,
-      password: req.body.password,
-      sessionSecret: uuid()
-    }))
+router.post('/email', async (req, res, next) => {
+  try {
+    if (!req.body.email || !req.body.password) {
+      return res.status(400).send({ error: 'Email or password missing' })
+    }
+    const user =
+      (await Users.findOne({ email: req.body.email })) ||
+      (await Users.create({
+        email: req.body.email,
+        password: req.body.password,
+        sessionSecret: uuid()
+      }))
 
-  if (user.password !== req.body.password) {
-    res.status(400).send({ error: 'Incorrect email or password' })
-    return
+    if (user.password !== req.body.password) {
+      res.status(400).send({ error: 'Incorrect email or password' })
+      return
+    }
+    const token = setAuthCookies(req, res, user)
+    res.send({ user, token })
+  } catch (error) {
+    next(error)
   }
-  const token = setAuthCookies(req, res, user)
-  res.send({ user, token })
 })
 
 const googleOptions = { scope: ['profile', 'email', 'openid'] }
