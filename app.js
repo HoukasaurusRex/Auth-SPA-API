@@ -43,4 +43,11 @@ app.get('/', (req, res) => {
   res.redirect(process.env.CLIENT_ORIGIN)
 })
 
+app.use((err, req, res) => {
+  console.error(err)
+  if (!res.headersSent) {
+    res.status(400).send({ error: err.message })
+  }
+})
+
 module.exports = app
