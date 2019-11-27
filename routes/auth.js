@@ -25,7 +25,8 @@ const setAuthCookies = (req, res, user) => {
     secure: req.secure,
     httpOnly: true,
     domain: req.get('origin'),
-    sameSite: false
+    sameSite: false,
+    maxAge: 0
   })
   return token
 }
@@ -36,14 +37,15 @@ router.post('/test/cookies', (req, res) => {
     email: 'test@example.com'
   }
   const token = jwt.sign(user, process.env.TOKEN_SECRET)
-  const { httpOnly, sameSite, domain, secure } = req.query
+  const { httpOnly, sameSite, domain, secure, maxAge } = req.query
   res.cookie('test.cookie', token, {
     secure: secure === 'true',
     httpOnly: httpOnly === 'true',
-    domain: domain || req.get('origin'),
-    sameSite: sameSite === 'true'
+    domain,
+    sameSite: sameSite === 'true',
+    maxAge: parseInt(maxAge, 10) || 0
   })
-  res.send({ token })
+  res.send({ token, cookie: res.get('Set-Cookie') })
 })
 
 router.get('/verify', passport.isAuthenticated, (req, res) => {
