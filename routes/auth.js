@@ -38,13 +38,17 @@ router.post('/test/cookies', (req, res) => {
   }
   const token = jwt.sign(user, process.env.TOKEN_SECRET)
   const { httpOnly, sameSite, domain, secure, maxAge } = req.query
-  res.cookie('test.cookie', token, {
+  const maxAgeNum = parseInt(maxAge, 10)
+  const options = {
     secure: secure === 'true',
     httpOnly: httpOnly === 'true',
     domain,
-    sameSite: sameSite === 'true',
-    maxAge: parseInt(maxAge, 10) || 0
-  })
+    sameSite: sameSite === 'true'
+  }
+  if (typeof maxAgeNum === 'number') {
+    options.maxAge = maxAgeNum
+  }
+  res.cookie('test.cookie', token, options)
   res.send({ token, cookie: res.get('Set-Cookie') })
 })
 
