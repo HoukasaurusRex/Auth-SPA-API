@@ -13,7 +13,7 @@ const setAuthCookies = (req, res, user) => {
   const jwtPayload = jwtComposition.slice(1).join('.')
   const jwtSignature = jwtComposition[0]
   // permanent
-  res.cookie('Auth-Payload', jwtPayload, {
+  res.cookie('auth.payload', jwtPayload, {
     secure: req.secure,
     maxAge: 1000 * 60 * 30, // 1 hour
     httpOnly: false,
@@ -21,7 +21,7 @@ const setAuthCookies = (req, res, user) => {
     sameSite: false
   })
   // session
-  res.cookie('Auth-Signature', jwtSignature, {
+  res.cookie('auth.signature', jwtSignature, {
     secure: req.secure,
     httpOnly: true,
     domain: req.get('origin'),
@@ -29,6 +29,22 @@ const setAuthCookies = (req, res, user) => {
   })
   return token
 }
+
+router.post('/test/cookies', (req, res) => {
+  const user = req.body || {
+    id: 'test',
+    email: 'test@example.com'
+  }
+  const token = jwt.sign(user, process.env.TOKEN_SECRET)
+  const { httpOnly, sameSite, domain, secure } = req.query
+  res.cookie('test.cookie', token, {
+    secure: secure === 'true',
+    httpOnly: httpOnly === 'true',
+    domain: domain || req.get('origin'),
+    sameSite: sameSite === 'true'
+  })
+  res.send({ token })
+})
 
 router.get('/verify', passport.isAuthenticated, (req, res) => {
   res.send(req.user)

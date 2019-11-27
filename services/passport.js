@@ -22,7 +22,7 @@ passport.deserializeUser(async (id, done) => {
 passport.isAuthenticated = expressJWT({
   secret: process.env.TOKEN_SECRET,
   getToken(req) {
-    const signature = req.cookies['Auth-Signature']
+    const signature = req.cookies['auth.signature']
     const payload = req.headers['authorization']
     if (!signature || !payload) {
       return null
