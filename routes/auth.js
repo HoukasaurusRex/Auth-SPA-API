@@ -48,7 +48,6 @@ router.post('/test/cookies', (req, res) => {
   if (!isNaN(maxAgeNum)) {
     options.maxAge = maxAgeNum
   }
-  console.log({ options })
   res.cookie('test.cookie', token, options)
   res.send({ token, cookie: res.get('Set-Cookie') })
 })
