@@ -16,14 +16,14 @@ const setAuthCookies = (req, res, user) => {
   res.cookie('auth.payload', jwtPayload, {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 1000 * 60 * 60, // 1 hour
-    httpOnly: false,
-    domain: 'houk.space',
-    sameSite: 'Lax' // https://www.chromestatus.com/feature/5088147346030592
+    httpOnly: false, // allow SPA to check if it's logged in without making request to server
+    domain: 'houk.space', // Domain must be set for cross origin cookies https://stackoverflow.com/questions/1062963/how-do-browser-cookie-domains-work
+    sameSite: 'Lax' // Allow subdomains access to cookie https://www.chromestatus.com/feature/5088147346030592
   })
   // session
   res.cookie('auth.signature', jwtSignature, {
     secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
+    httpOnly: true, // only allow server to access this cookie to verify authentication
     domain: 'houk.space',
     sameSite: 'Lax'
   })
