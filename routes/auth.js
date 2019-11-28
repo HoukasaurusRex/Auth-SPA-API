@@ -14,19 +14,18 @@ const setAuthCookies = (req, res, user) => {
   const jwtSignature = jwtComposition[0]
   // permanent
   res.cookie('auth.payload', jwtPayload, {
-    secure: req.secure,
-    maxAge: 1000 * 60 * 30, // 1 hour
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 1000 * 60 * 60, // 1 hour
     httpOnly: false,
     domain: req.get('origin'),
-    sameSite: false
+    sameSite: 'Lax' // https://www.chromestatus.com/feature/5088147346030592
   })
   // session
   res.cookie('auth.signature', jwtSignature, {
-    secure: req.secure,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     domain: req.get('origin'),
-    sameSite: false,
-    maxAge: 0
+    sameSite: 'Lax'
   })
   return token
 }
