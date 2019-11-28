@@ -6,6 +6,7 @@ const Users = require('../models/Users')
 const { generateUserPayload } = require('../utils/jwt')
 const router = express.Router()
 
+const prod = process.env.NODE_ENV === 'production'
 const setAuthCookies = (req, res, user) => {
   const payload = generateUserPayload(user)
   const token = jwt.sign(payload, process.env.TOKEN_SECRET)
@@ -14,18 +15,18 @@ const setAuthCookies = (req, res, user) => {
   const jwtSignature = jwtComposition[0]
   // permanent
   res.cookie('auth.payload', jwtPayload, {
-    secure: process.env.NODE_ENV === 'production',
+    secure: prod,
     maxAge: 1000 * 60 * 60, // 1 hour
     httpOnly: false, // allow SPA to check if it's logged in without making request to server
-    domain: 'houk.space', // Domain must be set for cross origin cookies https://stackoverflow.com/questions/1062963/how-do-browser-cookie-domains-work
-    sameSite: 'Lax' // Allow subdomains access to cookie https://www.chromestatus.com/feature/5088147346030592
+    domain: process.env.PARENT_DOMAIN, // Domain must be set for cross origin cookies https://stackoverflow.com/questions/1062963/how-do-browser-cookie-domains-work
+    sameSite: prod ? 'Lax' : false // Allow subdomains access to cookie https://www.chromestatus.com/feature/5088147346030592
   })
   // session
   res.cookie('auth.signature', jwtSignature, {
-    secure: process.env.NODE_ENV === 'production',
+    secure: prod,
     httpOnly: true, // only allow server to access this cookie to verify authentication
-    domain: 'houk.space',
-    sameSite: 'Lax'
+    domain: process.env.PARENT_DOMAIN,
+    sameSite: prod ? 'Lax' : false
   })
   return token
 }
@@ -43,7 +44,7 @@ router.post('/test/cookies', (req, res, next) => {
       secure: secure === 'true',
       httpOnly: httpOnly === 'true',
       domain,
-      sameSite
+      sameSite: sameSite.match(/Lax|Strict/i) ? sameSite : false
     }
     if (!isNaN(maxAgeNum)) {
       options.maxAge = maxAgeNum
