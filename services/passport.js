@@ -33,7 +33,7 @@ passport.isAuthenticated = expressJWT({
 
 // ANCHOR Google Auth
 const googleOptions = {
-  callbackURL: 'process.env.API_ORIGINauth/google/redirect',
+  callbackURL: process.env.API_ORIGIN + '/auth/google/redirect',
   clientID: process.env.GOOGLE_ID,
   clientSecret: process.env.GOOGLE_SECRET
 }
@@ -58,7 +58,7 @@ passport.use('google', new GoogleStrategy(googleOptions, googleCallback))
 const linkedinOptions = {
   clientID: process.env.LINKEDIN_ID,
   clientSecret: process.env.LINKEDIN_SECRET,
-  callbackURL: 'process.env.API_ORIGINauth/linkedin/redirect',
+  callbackURL: process.env.API_ORIGIN + '/auth/linkedin/redirect',
   scope: ['r_emailaddress', 'r_liteprofile']
 }
 const linkedinCallback = async (_accessToken, _refreshToken, profile, done) => {
