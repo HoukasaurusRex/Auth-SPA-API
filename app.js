@@ -19,13 +19,7 @@ app.use(cookieParser())
 app.use(
   cors({
     // origin must not be a wildcard to receive cross domain cookies
-    origin: [
-      process.env.CLIENT_ORIGIN,
-      'https://oauth-examples-client.terminallychill.now.sh',
-      'http://localhost:8080',
-      'https://auth-client.houk.space'
-    ],
-    // TODO: function to validate origin
+    origin: process.env.CLIENT_ORIGIN,
     credentials: true
   })
 )
@@ -35,7 +29,14 @@ mongoose.connect(
   process.env.MONGODB_URI,
   { useNewUrlParser: true, useUnifiedTopology: true },
   () => {
-    console.log('Connected to Mongo DB')
+    if (process.env.MONGODB_URI) {
+      console.log('Connected to Mongo DB')
+    } else {
+      console.warn(
+        'Please add MONGODB_URI to your .env for this app to work properly'
+      )
+      process.exit(1)
+    }
   }
 )
 

@@ -52,7 +52,13 @@ const googleCallback = async (_accessToken, _refreshToken, profile, done) => {
     }))
   done(null, user)
 }
-passport.use('google', new GoogleStrategy(googleOptions, googleCallback))
+if (googleOptions.clientID) {
+  passport.use('google', new GoogleStrategy(googleOptions, googleCallback))
+} else {
+  console.warn(
+    'Please add GOOGLE_ID and GOOGLE_SECRET to your .env file to use Google OAuth'
+  )
+}
 
 // ANCHOR LinkedIn Auth
 const linkedinOptions = {
@@ -75,6 +81,12 @@ const linkedinCallback = async (_accessToken, _refreshToken, profile, done) => {
     }))
   done(null, user)
 }
-passport.use(new LinkedInStrategy(linkedinOptions, linkedinCallback))
+if (linkedinOptions.clientID) {
+  passport.use(new LinkedInStrategy(linkedinOptions, linkedinCallback))
+} else {
+  console.warn(
+    'Please add LINKEDIN_ID and LINKEDIN_SECRET to your .env file to use LinkedIn OAuth'
+  )
+}
 
 module.exports = passport
