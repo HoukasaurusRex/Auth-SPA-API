@@ -44,11 +44,10 @@ app.get('/', (req, res) => {
   res.redirect(process.env.CLIENT_ORIGIN)
 })
 
-app.use((err, req, res) => {
-  console.log('=========================')
+app.use((err, req, res, next) => {
   console.error(err)
   if (!res.headersSent) {
-    res.status(400).send({ error: err.message })
+    res.status(err.status || 400).send({ error: err.message })
   }
 })
 
